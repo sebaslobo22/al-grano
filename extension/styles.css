@@ -1,0 +1,122 @@
+/* Al Grano — lives at the bottom of the voice-note bubble.
+   Inherits WhatsApp's font and text color; every tint is translucent so it works in the
+   light and the dark theme. Accent text switches on body.dark (WhatsApp's theme class). */
+.ag-box {
+  --ag-accent: #ff8a1f;
+  --ag-accent-ink: #b35200;           /* readable amber on light bubbles */
+  --ag-tint: rgba(255, 138, 31, 0.16);
+  --ag-mark: rgba(255, 138, 31, 0.4);
+  --ag-error: #d6363b;
+  --ag-line: rgba(127, 127, 127, 0.22);
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 4px 10px 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ag-line);
+  font-size: 14.2px;
+  line-height: 1.5;
+  color: inherit;
+  word-break: break-word;
+  user-select: text;
+}
+body.dark .ag-box,
+.dark .ag-box {
+  --ag-accent-ink: #ffa04d;
+  --ag-mark: rgba(255, 138, 31, 0.36);
+  --ag-error: #ff6b70;
+}
+.ag-box *, .ag-box *::before, .ag-box *::after { box-sizing: border-box; }
+.ag-ico { flex: none; display: block; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- header ---- */
+.ag-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 22px; margin-bottom: 4px; }
+.ag-title { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; opacity: 0.6; }
+.ag-title .ag-ico { color: var(--ag-accent); stroke-width: 2.2; }
+
+.ag-copy {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 22px; min-width: 22px; padding: 0 5px; margin: 0 -5px 0 0;
+  border: 0; border-radius: 999px; background: transparent; color: inherit;
+  font: inherit; font-size: 11.5px; font-weight: 500; line-height: 1;
+  opacity: 0; cursor: pointer; justify-content: center;
+  transition: opacity 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+.ag-box:hover .ag-copy, .ag-copy:focus-visible, .ag-copy.ag-copied { opacity: 0.7; }
+.ag-copy:hover { opacity: 1; background: var(--ag-line); }
+.ag-copy.ag-copied { opacity: 1; background: var(--ag-tint); color: var(--ag-accent-ink); padding: 0 8px 0 6px; }
+@media (hover: none) { .ag-copy { opacity: 0.7; } }
+
+/* ---- transcript ---- */
+.ag-body p { margin: 0 0 8px; }
+.ag-body p:last-child { margin-bottom: 0; }
+.ag-body .ag-empty { opacity: 0.6; font-style: italic; }
+.ag-key {
+  font-weight: 600;
+  padding: 0 1px;
+  background: linear-gradient(transparent 55%, var(--ag-mark) 55%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.ag-body.ag-folded {
+  max-height: 8.6em; /* about six lines */
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent);
+}
+
+.ag-more {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin: 2px 0 0; padding: 2px 0; border: 0; background: none;
+  color: var(--ag-accent-ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.ag-more:hover span { text-decoration: underline; text-underline-offset: 2px; }
+.ag-more .ag-ico { transition: transform 0.2s ease; stroke-width: 2.6; }
+.ag-more.ag-open .ag-ico { transform: rotate(180deg); }
+
+/* ---- working: skeleton lines ---- */
+.ag-skeleton { display: grid; gap: 7px; margin: 2px 0 8px; }
+.ag-skeleton i {
+  display: block; height: 9px; border-radius: 999px;
+  background: linear-gradient(90deg, rgba(127,127,127,.16) 20%, rgba(255,138,31,.30) 50%, rgba(127,127,127,.16) 80%);
+  background-size: 220% 100%;
+  animation: ag-shimmer 1.4s linear infinite;
+}
+.ag-skeleton i:nth-child(1) { width: 96%; }
+.ag-skeleton i:nth-child(2) { width: 82%; animation-delay: -0.2s; }
+.ag-skeleton i:nth-child(3) { width: 56%; animation-delay: -0.4s; }
+@keyframes ag-shimmer { from { background-position: 110% 0; } to { background-position: -110% 0; } }
+.ag-small { font-size: 12px; opacity: 0.6; }
+
+/* ---- pills (Transcribir / Reintentar) ---- */
+.ag-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px; padding: 0 12px; border: 0; border-radius: 999px;
+  font: inherit; font-size: 12.5px; font-weight: 600; line-height: 1; cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.12s ease;
+}
+.ag-pill:active { transform: scale(0.97); }
+.ag-pill-brand { background: var(--ag-tint); color: var(--ag-accent-ink); }
+.ag-pill-brand:hover { background: rgba(255, 138, 31, 0.28); }
+.ag-pill-brand .ag-ico { color: var(--ag-accent); }
+.ag-pill-error { background: rgba(229, 72, 77, 0.16); color: var(--ag-error); }
+.ag-pill-error:hover { background: rgba(229, 72, 77, 0.28); }
+
+.ag-box-manual { border-top-color: transparent; padding-top: 2px; }
+.ag-box-hint { font-style: italic; }
+
+/* ---- error card ---- */
+.ag-error {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px;
+  padding: 8px 10px; border-radius: 10px;
+  background: rgba(229, 72, 77, 0.12); border: 1px solid rgba(229, 72, 77, 0.28);
+}
+.ag-error-msg { display: inline-flex; align-items: flex-start; gap: 7px; flex: 1 1 140px; font-size: 13px; line-height: 1.4; }
+.ag-error-msg .ag-ico { color: var(--ag-error); margin-top: 2px; }
+
+.ag-copy:focus-visible, .ag-more:focus-visible, .ag-pill:focus-visible { outline: 2px solid var(--ag-accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-skeleton i { animation: none; }
+  .ag-copy, .ag-more .ag-ico, .ag-pill { transition: none; }
+}

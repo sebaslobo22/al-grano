@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=360">
+<title>Al Grano</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<main>
+  <header class="top">
+    <img class="logo" src="icons/logo.svg" width="36" height="36" alt="">
+    <div class="brand">
+      <h1>Al Grano</h1>
+      <p class="tag">Tus notas de voz, al grano.</p>
+    </div>
+    <span id="estado" class="pill" data-s="busy" role="status"><i></i><b>Buscando…</b></span>
+  </header>
+  <p id="ayuda" class="help" hidden>Ábrelo y vuelve a probar.</p>
+
+  <section>
+    <h2 id="h-modo">Cuándo transcribir</h2>
+    <div class="seg" role="radiogroup" aria-labelledby="h-modo" id="modo">
+      <button type="button" role="radio" data-v="auto">Automático</button>
+      <button type="button" role="radio" data-v="manual">Con botón</button>
+    </div>
+  </section>
+
+  <section>
+    <h2 id="h-idioma">Idioma de las notas</h2>
+    <div class="seg" role="radiogroup" aria-labelledby="h-idioma" id="idioma">
+      <button type="button" role="radio" data-v="auto">Detectar</button>
+      <button type="button" role="radio" data-v="es">Español</button>
+      <button type="button" role="radio" data-v="en">Inglés</button>
+      <button type="button" role="radio" data-v="pt">Portugués</button>
+    </div>
+  </section>
+
+  <section class="uso" aria-live="polite">
+    <div class="uso-num"><strong id="uso-n">0</strong><span id="uso-n-l">notas transcritas</span></div>
+    <div class="uso-sep"></div>
+    <div class="uso-num"><strong id="uso-m">0</strong><span>min de audio</span></div>
+  </section>
+
+  <details class="avanzado">
+    <summary>Avanzado</summary>
+    <label for="server">Dirección del transcriptor</label>
+    <div class="row">
+      <input id="server" type="text" spellcheck="false" autocomplete="off">
+      <button type="button" id="buscar" class="btn">Buscar de nuevo</button>
+    </div>
+    <p id="server-nota" class="note">Se detecta sola entre los puertos 8170 y 8199.</p>
+  </details>
+
+  <footer>
+    <a href="https://sebaslobo22.github.io/al-grano/" target="_blank" rel="noopener">Cómo funciona</a>
+    <span id="version"></span>
+  </footer>
+</main>
+<script src="popup.js"></script>
+</body>
+</html>
