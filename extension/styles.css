@@ -10,7 +10,9 @@
   --ag-line: rgba(127, 127, 127, 0.22);
   display: block;
   box-sizing: border-box;
-  max-width: 100%;
+  /* Never widen the bubble: take no width of our own, then fill whatever the voice note set. */
+  width: 0;
+  min-width: calc(100% - 20px);
   margin: 4px 10px 8px;
   padding-top: 8px;
   border-top: 1px solid var(--ag-line);
