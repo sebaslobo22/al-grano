@@ -51,16 +51,26 @@
       const audioIds = res.api
         ? res.audio
         : fresh.filter((id) => { const r = rowFor(id); return r && r.querySelector(VOICE_SELECTOR); });
-      for (const id of audioIds) await register(id);
+      for (const id of audioIds) await register(id, (res.hashes && res.hashes[id]) || '');
     }
     // WhatsApp re-renders rows while scrolling; put the boxes back.
     for (const [id] of notes) render(id);
   }
 
-  async function register(id) {
+  // Transcripts are saved on this computer (chrome.storage.local) under the audio's fingerprint,
+  // so reloading the page, restarting the browser or seeing a forwarded copy never repeats work.
+  const cacheKeys = (id) => {
+    const h = hashes.get(id);
+    return h ? ['h:' + h, 't:' + id] : ['t:' + id];
+  };
+  const hashes = new Map();
+
+  async function register(id, hash) {
     if (notes.has(id)) return;
-    const key = 't:' + id;
-    const cached = (await chrome.storage.local.get(key))[key];
+    if (hash) hashes.set(id, hash);
+    const keys = cacheKeys(id);
+    const got = await chrome.storage.local.get(keys);
+    const cached = keys.map((k) => got[k]).find((v) => v != null);
     if (cached != null) {
       notes.set(id, { status: 'done', result: cached });
     } else if (cfg.mode === 'auto') {
@@ -128,8 +138,8 @@
         error: offline ? 'OpenWhispr está cerrado. Ábrelo y toca Reintentar.' : 'El transcriptor falló. Toca Reintentar.',
       });
     }
-    const result = { ...res.result, seconds: res.result.seconds || seconds };
-    chrome.storage.local.set({ ['t:' + id]: result });
+    const result = { ...res.result, seconds: res.result.seconds || seconds, at: Date.now() };
+    chrome.storage.local.set({ [cacheKeys(id)[0]]: result });
     set(id, { status: 'done', result });
   }
 
@@ -144,7 +154,7 @@
     if (!id || Date.now() - at > 15000) return;
     const n = notes.get(id);
     if (!n && !(rowFor(id) && rowFor(id).querySelector(VOICE_SELECTOR))) return;
-    if (n && (n.status === 'done' || n.status === 'working')) return;
+    if (n && (n.status === 'done' || n.status === 'working' || n.status === 'manual')) return;
     if (!n) notes.set(id, { status: 'working' });
     await transcribeBuffer(id, await blob.arrayBuffer());
   }

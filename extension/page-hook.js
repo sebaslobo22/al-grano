@@ -105,14 +105,20 @@
     if (kind === 'classify') {
       if (!msgCollection()) return reply({ api: false });
       // One pass over the loaded messages; rows use the short id, older builds the full one.
-      const audioIds = new Set();
+      const audioIds = new Map(); // row id -> audio file hash ('' when unknown)
       try {
         for (const m of msgCollection().getModelsArray()) {
-          if (m.id && isAudioType(m.type)) { audioIds.add(m.id.id); audioIds.add(String(m.id)); }
+          if (m.id && isAudioType(m.type)) {
+            const hash = String(m.filehash || '');
+            audioIds.set(m.id.id, hash);
+            audioIds.set(String(m.id), hash);
+          }
         }
       } catch {}
       const audio = ids.filter((i) => audioIds.has(i));
-      return reply({ api: true, audio });
+      const hashes = {};
+      for (const i of audio) hashes[i] = audioIds.get(i);
+      return reply({ api: true, audio, hashes });
     }
 
     if (kind === 'download') {
