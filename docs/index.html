@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=1.6">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -72,7 +72,7 @@
 
 <section class="demo wrap" id="demo" aria-labelledby="demo-t">
   <h2 id="demo-t" class="sr">Demostración</h2>
-  <div class="stage">
+  <div class="stage halo" style="--rad:20px">
     <figure class="before">
       <figcaption>Antes</figcaption>
       <div class="app app-dim" aria-label="Transcripción sin formato">
@@ -125,17 +125,17 @@
 </section>
 
 <section class="benefits wrap" aria-label="Ventajas">
-  <article>
+  <article class="morph halo">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12s3.5-6.5 9-6.5S21 12 21 12s-3.5 6.5-9 6.5S3 12 3 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
     <h3>Lee en vez de escuchar</h3>
     <p>En una reunión, en el transporte o con el sonido apagado. Mira la nota en segundos y decide si te toca responder.</p>
   </article>
-  <article>
+  <article class="morph halo">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
     <h3>Privado de verdad</h3>
     <p>Todo ocurre en tu computadora. El audio nunca sale de ella y no hay cuenta ni servidor nuestro de por medio.</p>
   </article>
-  <article>
+  <article class="morph halo">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 8-4.5 4L8 16M16 8l4.5 4L16 16M13.5 5l-3 14"/></svg>
     <h3>Gratis y abierto</h3>
     <p>Código abierto con licencia MIT. Puedes leerlo, copiarlo y mejorarlo. No hay pagos ni versión de pago.</p>
@@ -143,9 +143,9 @@
 </section>
 
 <section class="how wrap" id="como-funciona" aria-labelledby="how-t">
-  <h2 id="how-t">Cómo funciona</h2>
+  <h2 id="how-t" class="morph">Cómo funciona</h2>
   <ol class="steps">
-    <li>
+    <li class="morph halo">
       <svg viewBox="0 0 160 96" fill="none" aria-hidden="true">
         <rect x="14" y="14" width="86" height="46" rx="12" class="s-line"/>
         <path d="M30 60v14l16-14" class="s-line"/>
@@ -157,7 +157,7 @@
       <h3>WhatsApp Web descifra la nota</h3>
       <p>Cuando llega un audio, WhatsApp Web lo abre en tu navegador, como siempre.</p>
     </li>
-    <li>
+    <li class="morph halo">
       <svg viewBox="0 0 160 96" fill="none" aria-hidden="true">
         <path d="M26 30v16M34 24v28M42 29v18M50 22v32" class="s-amber"/>
         <path d="M64 38h18m0 0-6-6m6 6-6 6" class="s-line"/>
@@ -169,7 +169,7 @@
       <h3>Al Grano la pasa a tu Whisper</h3>
       <p>La extensión entrega el audio al Whisper de OpenWhispr, que corre en tu computadora.</p>
     </li>
-    <li>
+    <li class="morph halo">
       <svg viewBox="0 0 160 96" fill="none" aria-hidden="true">
         <rect x="22" y="14" width="116" height="62" rx="12" class="s-line"/>
         <path d="M40 76v12l14-12" class="s-line"/>
@@ -184,22 +184,22 @@
 </section>
 
 <section class="install wrap" id="instalar" aria-labelledby="inst-t">
-  <h2 id="inst-t">Instálalo en un minuto</h2>
+  <h2 id="inst-t" class="morph">Instálalo en un minuto</h2>
   <ol class="inst">
-    <li>
-      <div>
+    <li class="morph" data-fill style="--rad:14px">
+      <div class="halo">
         <h3>Instala OpenWhispr</h3>
         <p><a href="https://openwhispr.com" rel="noopener">OpenWhispr</a> es una app gratuita para macOS, Windows y Linux. En sus ajustes descarga un modelo local y déjala abierta.</p>
       </div>
     </li>
-    <li>
-      <div>
+    <li class="morph" data-fill style="--rad:14px">
+      <div class="halo">
         <h3>Descarga y descomprime Al Grano</h3>
         <p><a href="https://github.com/sebaslobo22/al-grano/releases/latest/download/al-grano.zip" rel="noopener">Descarga al-grano.zip</a> y descomprímelo en una carpeta que no vayas a borrar.</p>
       </div>
     </li>
-    <li>
-      <div>
+    <li class="morph" data-fill style="--rad:14px">
+      <div class="halo">
         <h3>Cárgala en Chrome</h3>
         <p>Abre esta dirección, activa «Modo de desarrollador» y toca «Cargar descomprimida». Elige la carpeta.</p>
         <div class="code">
@@ -209,8 +209,8 @@
         <p class="fine">Chrome no abre esa dirección desde un enlace; cópiala y pégala en una pestaña nueva.</p>
       </div>
     </li>
-    <li>
-      <div>
+    <li class="morph" data-fill style="--rad:14px">
+      <div class="halo">
         <h3>Recarga WhatsApp Web</h3>
         <p>Abre una conversación con notas de voz: el texto aparece solo debajo de cada una, sin darle play.</p>
       </div>
@@ -222,18 +222,18 @@
 </section>
 
 <section class="faq wrap" id="preguntas" aria-labelledby="faq-t">
-  <h2 id="faq-t">Preguntas frecuentes</h2>
+  <h2 id="faq-t" class="morph">Preguntas frecuentes</h2>
   <div class="acc">
-    <details><summary>¿Mis audios se suben a internet?</summary><p>No. El audio pasa de WhatsApp Web al Whisper que corre en tu computadora y ahí se queda. Al Grano no tiene servidores ni cuentas.</p></details>
-    <details><summary>¿Cuánto cuesta?</summary><p>Nada. Al Grano es gratis y de código abierto, y OpenWhispr también lo es.</p></details>
-    <details><summary>¿Por qué no está en la Chrome Web Store?</summary><p>Todavía no. Por ahora se instala a mano, en un minuto, con los pasos de arriba.</p></details>
-    <details><summary>¿Qué pasa si WhatsApp cambia?</summary><p>Puede que Al Grano deje de transcribir solo. Mientras se corrige, basta con darle play a la nota para que la transcriba.</p></details>
-    <details><summary>¿Funciona con otros navegadores?</summary><p>Funciona en Chrome y debería funcionar en navegadores basados en Chromium, como Brave, Edge o Arc, que permiten cargar extensiones descomprimidas. No lo hemos probado en ellos.</p></details>
+    <details class="morph halo" style="--rad:14px"><summary>¿Mis audios se suben a internet?</summary><p>No. El audio pasa de WhatsApp Web al Whisper que corre en tu computadora y ahí se queda. Al Grano no tiene servidores ni cuentas.</p></details>
+    <details class="morph halo" style="--rad:14px"><summary>¿Cuánto cuesta?</summary><p>Nada. Al Grano es gratis y de código abierto, y OpenWhispr también lo es.</p></details>
+    <details class="morph halo" style="--rad:14px"><summary>¿Por qué no está en la Chrome Web Store?</summary><p>Todavía no. Por ahora se instala a mano, en un minuto, con los pasos de arriba.</p></details>
+    <details class="morph halo" style="--rad:14px"><summary>¿Qué pasa si WhatsApp cambia?</summary><p>Puede que Al Grano deje de transcribir solo. Mientras se corrige, basta con darle play a la nota para que la transcriba.</p></details>
+    <details class="morph halo" style="--rad:14px"><summary>¿Funciona con otros navegadores?</summary><p>Funciona en Chrome y debería funcionar en navegadores basados en Chromium, como Brave, Edge o Arc, que permiten cargar extensiones descomprimidas. No lo hemos probado en ellos.</p></details>
   </div>
 </section>
 
-<section class="final wrap">
-  <h2>Menos escuchar. Más <span class="mark">leer.</span></h2>
+<section class="final wrap halo">
+  <h2 class="morph">Menos escuchar. Más <span class="mark">leer.</span></h2>
   <div class="cta center">
     <a class="pill pill-main" href="https://github.com/sebaslobo22/al-grano/releases/latest/download/al-grano.zip" rel="noopener">Descargar para Chrome</a>
     <a class="pill pill-ghost" href="https://github.com/sebaslobo22/al-grano" rel="noopener">Ver el código</a>
@@ -248,6 +248,7 @@
     <p class="disc">No afiliado a WhatsApp ni a Meta.</p>
   </div>
 </footer>
-<script src="app.js"></script>
+<script src="app.js?v=1.6"></script>
+<script src="motion.js?v=1.6"></script>
 </body>
 </html>
