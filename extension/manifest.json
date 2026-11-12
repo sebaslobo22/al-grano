@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Al Grano — notas de voz al grano",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Transcribe las notas de voz de WhatsApp Web dentro de la burbuja, con Whisper local de OpenWhispr. Todo ocurre en tu computadora, sin nube.",
   "permissions": [
     "storage"

@@ -14,7 +14,7 @@ async function conectar(note) {
   if (r && r.ok) {
     estado('ok', 'Conectado');
     $('server').value = r.server;
-    if (note) $('server-nota').textContent = 'Encontrado en ' + r.server;
+    if (note) $('server-nota').textContent = 'Conectado a ' + r.server;
   } else {
     estado('off', 'OpenWhispr cerrado');
     if (note) $('server-nota').textContent = 'No se encontró. Abre OpenWhispr y prueba de nuevo.';
@@ -74,7 +74,7 @@ $('buscar').addEventListener('click', async () => {
   if (r && r.ok) {
     $('server').value = r.server;
     estado('ok', 'Conectado');
-    $('server-nota').textContent = 'Encontrado en ' + r.server;
+    $('server-nota').textContent = 'Conectado a ' + r.server;
   } else {
     estado('off', 'OpenWhispr cerrado');
     $('server-nota').textContent = 'No se encontró. Abre OpenWhispr y prueba de nuevo.';
