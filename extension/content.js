@@ -196,7 +196,9 @@
     const n = notes.get(id);
     if (!row || !n) return;
     const resultText = n.result ? (typeof n.result === 'string' ? n.result : n.result.text) : '';
-    const state = n.status + '|' + (resultText || n.error || '');
+    // Waiting in line and working look the same: retries must not restart the loader.
+    const look = n.status === 'pending' ? 'working' : n.status;
+    const state = look + '|' + (resultText || n.error || '');
     let box = row.querySelector('.ag-box');
     // A box hung on the row itself (bubble not found at the time) is moved into the bubble.
     if (box && box.parentElement === row) { box.remove(); box = null; }
