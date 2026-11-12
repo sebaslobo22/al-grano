@@ -44,13 +44,24 @@
   async function scan() {
     const rows = [...document.querySelectorAll('#main [data-id]')];
     const fresh = rows.map((r) => r.getAttribute('data-id')).filter((id) => id && !seen.has(id));
-    fresh.forEach((id) => seen.add(id));
 
     if (fresh.length) {
       const res = await pageCall('classify', { ids: fresh }, 5000);
-      const audioIds = res.api
-        ? res.audio
-        : fresh.filter((id) => { const r = rowFor(id); return r && r.querySelector(VOICE_SELECTOR); });
+      let audioIds;
+      if (res.api) {
+        fresh.forEach((id) => seen.add(id));
+        audioIds = res.audio;
+      } else {
+        // Without WhatsApp's modules only the DOM tells; a row that is still an empty
+        // placeholder (virtualized) is looked at again on the next scan.
+        audioIds = [];
+        for (const id of fresh) {
+          const r = rowFor(id);
+          if (!r || !r.childElementCount || !r.innerText.trim()) continue;
+          seen.add(id);
+          if (r.querySelector(VOICE_SELECTOR)) audioIds.push(id);
+        }
+      }
       for (const id of audioIds) await register(id, (res.hashes && res.hashes[id]) || '');
     }
     // WhatsApp re-renders rows while scrolling; put the boxes back.
@@ -107,18 +118,31 @@
   }
 
   // ---- getting audio and transcribing ----
+  // A note you just recorded is still uploading, and a fresh chat may not be loaded yet:
+  // keep the loader and try again a few times before asking for a play.
+  const RETRY_MS = [3000, 6000, 12000, 24000, 48000];
+  const tries = new Map();
   async function process(id) {
-    set(id, { status: 'working' });
+    set(id, { status: 'working', startedAt: Date.now() });
     const res = await pageCall('download', { id });
     if (!res.ok) {
+      const n = tries.get(id) || 0;
+      if (n < RETRY_MS.length && res.error !== 'not-audio') {
+        tries.set(id, n + 1);
+        set(id, { status: 'pending' });
+        setTimeout(() => { if (notes.get(id) && notes.get(id).status === 'pending') enqueue(id); }, RETRY_MS[n]);
+        return;
+      }
       set(id, { status: 'needs-play' });
       return;
     }
+    tries.delete(id);
     await transcribeBuffer(id, res.buffer);
   }
 
+  const MIN_LOADER_MS = 700;
   async function transcribeBuffer(id, buffer) {
-    set(id, { status: 'working' });
+    if ((notes.get(id) || {}).status !== 'working') set(id, { status: 'working', startedAt: Date.now() });
     let wav, seconds;
     try {
       ({ wav, seconds } = await WTAudio.toWav16k(buffer));
@@ -140,6 +164,8 @@
     }
     const result = { ...res.result, seconds: res.result.seconds || seconds, at: Date.now() };
     chrome.storage.local.set({ [cacheKeys(id)[0]]: result });
+    const shown = Date.now() - ((notes.get(id) || {}).startedAt || 0);
+    if (shown < MIN_LOADER_MS) await new Promise((r) => setTimeout(r, MIN_LOADER_MS - shown));
     set(id, { status: 'done', result });
   }
 
@@ -183,6 +209,8 @@
       box.className = 'ag-box';
       host.appendChild(box);
     }
+    const fresh = !box.dataset.state;
+    const from = fresh ? 0 : box.getBoundingClientRect().height;
     box.dataset.state = state;
     box.textContent = '';
     box.classList.remove('ag-box-work', 'ag-box-error', 'ag-box-manual', 'ag-box-hint');
@@ -231,6 +259,29 @@
         break;
       }
     }
+    // WhatsApp rebuilds rows while scrolling: a box we already showed comes back without replaying.
+    if (n.shown !== state) morph(box, from, !fresh || n.status !== 'done');
+    n.shown = state;
+  }
+
+  // Height glides from the old state to the new one and the new content fades in from a blur.
+  // Uses the Web Animations API (Chrome and Safari), touches only height, opacity and filter.
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  function morph(box, from, emphasize) {
+    if (still.matches || !box.animate) return;
+    const to = box.getBoundingClientRect().height;
+    const ease = 'cubic-bezier(.22,.8,.24,1)';
+    if (Math.abs(to - from) > 1) {
+      box.animate([{ height: from + 'px', overflow: 'hidden' }, { height: to + 'px', overflow: 'hidden' }],
+        { duration: emphasize ? 460 : 320, easing: ease });
+    }
+    const parts = box.querySelectorAll('.ag-head, .ag-asks, .ag-body > *, .ag-more, .ag-skeleton, .ag-small, .ag-pill, .ag-error');
+    parts.forEach((el, i) => {
+      el.animate([
+        { opacity: 0, transform: 'translateY(6px)', filter: 'blur(6px)' },
+        { opacity: 1, transform: 'none', filter: 'blur(0)' },
+      ], { duration: 420, delay: Math.min(i, 8) * 45, easing: ease, fill: 'backwards' });
+    });
   }
 
   // The bubble is the outermost ancestor of the play button that paints a background and is

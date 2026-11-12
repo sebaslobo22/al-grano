@@ -71,6 +71,9 @@
     let blob = await blobFromMediaData(msg);
     if (blob) return { buffer: await blob.arrayBuffer(), mime: blob.type || msg.mimetype || 'audio/ogg' };
 
+    // A note you just sent is still uploading: nothing to fetch yet, ask to come back later.
+    if (!msg.directPath) throw new Error('not-ready');
+
     const dm = mod('WAWebDownloadManager');
     const manager = dm && (dm.downloadManager || dm.default);
     if (manager && typeof manager.downloadAndMaybeDecrypt === 'function') {
