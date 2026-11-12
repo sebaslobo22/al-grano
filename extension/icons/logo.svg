@@ -1,7 +1,64 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-  <rect width="128" height="128" rx="28" fill="#0F1012"/>
-  <path d="M30 28h68a12 12 0 0 1 12 12v40a12 12 0 0 1-12 12H62L40 108V92h-10a12 12 0 0 1-12-12V40a12 12 0 0 1 12-12z" fill="none" stroke="#FF8A1F" stroke-width="9" stroke-linejoin="round"/>
-  <g stroke="#FF8A1F" stroke-width="9" stroke-linecap="round">
-    <path d="M42 52v16"/><path d="M56 44v32"/><path d="M70 50v20"/><path d="M84 60h6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Warm amber base -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFC15C"/>
+      <stop offset=".48" stop-color="#FF8A1F"/>
+      <stop offset="1" stop-color="#E4520B"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".28" cy=".18" r=".75">
+      <stop offset="0" stop-color="#FFF4DD" stop-opacity=".55"/>
+      <stop offset=".55" stop-color="#FFF4DD" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shade" cx=".7" cy="1.05" r=".7">
+      <stop offset="0" stop-color="#9E2E00" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#9E2E00" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Glass bubble -->
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".97"/>
+      <stop offset="1" stop-color="#FFF1E2" stop-opacity=".88"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset=".45" stop-color="#FFFFFF" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity=".7"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF8A1F"/>
+      <stop offset="1" stop-color="#D9480A"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="170%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="26" result="b"/>
+      <feOffset in="b" dy="28" result="o"/>
+      <feFlood flood-color="#8A2A00" flood-opacity=".38" result="c"/>
+      <feComposite in="c" in2="o" operator="in" result="sh"/>
+      <feMerge><feMergeNode in="sh"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="tile"><rect width="1024" height="1024" rx="229"/></clipPath>
+    <!-- One shape for the bubble so translucency never doubles at the tail -->
+    <path id="bubble" d="M362 236h300c104 0 186 82 186 186v86c0 104-82 186-186 186H418l-116 92c-14 11-34-1-31-19l14-88c-64-31-109-95-109-171v-86c0-104 82-186 186-186z"/>
+  </defs>
+
+  <g clip-path="url(#tile)">
+    <rect width="1024" height="1024" fill="url(#bg)"/>
+    <rect width="1024" height="1024" fill="url(#glow)"/>
+    <rect width="1024" height="1024" fill="url(#shade)"/>
+  </g>
+
+  <!-- glass bubble with depth -->
+  <g filter="url(#soft)">
+    <use href="#bubble" fill="url(#glass)"/>
+  </g>
+  <use href="#bubble" fill="none" stroke="url(#rim)" stroke-width="7"/>
+  <!-- specular sheen on the top edge -->
+  <path d="M300 300c22-30 58-50 98-52h250" fill="none" stroke="#FFFFFF" stroke-opacity=".9" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- wave that settles into a line of text -->
+  <g fill="url(#ink)">
+    <rect x="318" y="398" width="44" height="132" rx="22"/>
+    <rect x="392" y="346" width="44" height="236" rx="22"/>
+    <rect x="466" y="408" width="44" height="112" rx="22"/>
+    <rect x="540" y="442" width="168" height="44" rx="22"/>
   </g>
 </svg>

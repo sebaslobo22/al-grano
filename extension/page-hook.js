@@ -3,7 +3,21 @@
 //  1. Answer the content script: "which of these message ids are voice notes?"
 //     and "give me the decrypted audio of this one", using WhatsApp's internal modules.
 //  2. Fallback: catch audio blobs WhatsApp creates when the user presses play.
+// Chrome loads this file straight into the page (manifest "world": "MAIN"). Safari ignores that
+// key and runs it in the extension's isolated world instead; there it only re-injects itself into
+// the page with a <script src> tag and stops.
 (() => {
+  const isolated = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+  if (isolated) {
+    const s = document.createElement('script');
+    s.src = chrome.runtime.getURL('page-hook.js');
+    s.onload = () => s.remove();
+    (document.head || document.documentElement).append(s);
+    return;
+  }
+  if (window.__agPageHook) return;
+  window.__agPageHook = true;
+
   const TAG = 'wa-transcriptor';
 
   function mod(name) {

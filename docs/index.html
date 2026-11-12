@@ -25,10 +25,20 @@
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="logo" viewBox="0 0 32 32">
-    <rect width="32" height="32" rx="8" fill="#0F1012"/>
-    <path d="M8 7.5h16a2.5 2.5 0 0 1 2.5 2.5v9a2.5 2.5 0 0 1-2.5 2.5H16l-5 4v-4H8A2.5 2.5 0 0 1 5.5 19v-9A2.5 2.5 0 0 1 8 7.5z" fill="none" stroke="#FF8A1F" stroke-width="2.2" stroke-linejoin="round"/>
-    <path d="M10.5 13.5v3M13.5 11.5v7M16.5 12.5v5M19.5 15h2.5" stroke="#FF8A1F" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <defs>
+    <linearGradient id="ag-logo-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB24A"/>
+      <stop offset="1" stop-color="#E4520B"/>
+    </linearGradient>
+  </defs>
+  <symbol id="logo" viewBox="0 0 1024 1024">
+    <rect width="1024" height="1024" rx="229" fill="url(#ag-logo-bg)"/>
+    <path fill="#FFFFFF" d="M300 170h424c120 0 208 88 208 208v150c0 120-88 208-208 208H430l-180 140c-20 15-46-3-40-27l30-134c-90-30-148-110-148-207V378c0-120 88-208 208-208z"/>
+    <g fill="#E8600E">
+      <rect x="300" y="330" width="96" height="276" rx="48"/>
+      <rect x="452" y="400" width="96" height="136" rx="48"/>
+      <rect x="604" y="420" width="190" height="96" rx="48"/>
+    </g>
   </symbol>
 </svg>
 

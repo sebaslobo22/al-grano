@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Simplified mark for 16–32 px: bigger bubble, two bars and a line, no fine effects. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB24A"/>
+      <stop offset="1" stop-color="#E4520B"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="229" fill="url(#bg)"/>
+  <path fill="#FFFFFF" d="M300 170h424c120 0 208 88 208 208v150c0 120-88 208-208 208H430l-180 140c-20 15-46-3-40-27l30-134c-90-30-148-110-148-207V378c0-120 88-208 208-208z"/>
+  <g fill="#E8600E">
+    <rect x="300" y="330" width="96" height="276" rx="48"/>
+    <rect x="452" y="400" width="96" height="136" rx="48"/>
+    <rect x="604" y="420" width="190" height="96" rx="48"/>
+  </g>
+</svg>
