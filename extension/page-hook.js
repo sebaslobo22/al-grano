@@ -104,11 +104,14 @@
 
     if (kind === 'classify') {
       if (!msgCollection()) return reply({ api: false });
-      const byShort = new Map();
+      // One pass over the loaded messages; rows use the short id, older builds the full one.
+      const audioIds = new Set();
       try {
-        for (const m of msgCollection().getModelsArray()) if (m.id && isAudioType(m.type)) byShort.set(m.id.id, m);
+        for (const m of msgCollection().getModelsArray()) {
+          if (m.id && isAudioType(m.type)) { audioIds.add(m.id.id); audioIds.add(String(m.id)); }
+        }
       } catch {}
-      const audio = ids.filter((i) => byShort.has(i) || (getMsg(i) && isAudioType(getMsg(i).type)));
+      const audio = ids.filter((i) => audioIds.has(i));
       return reply({ api: true, audio });
     }
 

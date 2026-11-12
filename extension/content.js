@@ -65,11 +65,35 @@
       notes.set(id, { status: 'done', result: cached });
     } else if (cfg.mode === 'auto') {
       notes.set(id, { status: 'pending' });
-      process(id);
+      enqueue(id);
     } else {
       notes.set(id, { status: 'manual' });
     }
     render(id);
+  }
+
+  // ---- work queue: one note at a time, the ones on screen first ----
+  // Downloading, decoding and resampling several notes at once competes with WhatsApp for the
+  // main thread and the GPU; one by one keeps scrolling smooth and the transcriber is serial anyway.
+  const queue = [];
+  let busy = false;
+  function enqueue(id) {
+    if (!queue.includes(id)) queue.push(id);
+    pump();
+  }
+  function onScreen(id) {
+    const r = rowFor(id);
+    if (!r) return false;
+    const b = r.getBoundingClientRect();
+    return b.bottom > 0 && b.top < innerHeight;
+  }
+  async function pump() {
+    if (busy || !queue.length) return;
+    if (document.hidden) return document.addEventListener('visibilitychange', pump, { once: true });
+    busy = true;
+    const i = queue.findIndex(onScreen);
+    const id = queue.splice(i >= 0 ? i : queue.length - 1, 1)[0];
+    try { await process(id); } finally { busy = false; pump(); }
   }
 
   // ---- getting audio and transcribing ----
@@ -93,7 +117,7 @@
     }
     let res;
     try {
-      res = await chrome.runtime.sendMessage({ type: 'transcribe', wav: WTAudio.toBase64(wav) });
+      res = await chrome.runtime.sendMessage({ type: 'transcribe', wav: await WTAudio.toBase64(wav) });
     } catch {
       return set(id, { status: 'error', error: 'La extensión se actualizó. Recarga WhatsApp Web.' });
     }
@@ -135,16 +159,16 @@
     const row = rowFor(id);
     const n = notes.get(id);
     if (!row || !n) return;
-    const host = bubbleOf(row);
-    let box = row.querySelector('.ag-box');
-    if (!box) {
-      box = document.createElement('div');
-      box.className = 'ag-box';
-      host.appendChild(box);
-    }
     const resultText = n.result ? (typeof n.result === 'string' ? n.result : n.result.text) : '';
     const state = n.status + '|' + (resultText || n.error || '');
-    if (box.dataset.state === state) return;
+    let box = row.querySelector('.ag-box');
+    if (box && box.dataset.state === state) return;
+    if (!box) {
+      // Only measure the bubble (forces layout) when the box has to be created.
+      box = document.createElement('div');
+      box.className = 'ag-box';
+      bubbleOf(row).appendChild(box);
+    }
     box.dataset.state = state;
     box.textContent = '';
     box.classList.remove('ag-box-work', 'ag-box-error', 'ag-box-manual', 'ag-box-hint');
@@ -213,8 +237,13 @@
   }
 
   let timer = null;
-  new MutationObserver(() => {
+  const later = window.requestIdleCallback
+    ? (fn) => requestIdleCallback(fn, { timeout: 600 })
+    : (fn) => setTimeout(fn, 0);
+  new MutationObserver((records) => {
+    // Our own boxes changing must not trigger another scan.
+    if (records.every((r) => r.target.closest && r.target.closest('.ag-box'))) return;
     clearTimeout(timer);
-    timer = setTimeout(scan, 300);
+    timer = setTimeout(() => later(scan), 300);
   }).observe(document.body, { childList: true, subtree: true });
 })();

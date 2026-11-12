@@ -21,6 +21,11 @@ async function conectar(note) {
   }
 }
 
+$('guia').addEventListener('click', () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL('bienvenida.html') });
+  window.close();
+});
+
 // ---- segmented controls ----
 function seg(id, key, value) {
   const group = $(id);

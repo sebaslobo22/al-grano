@@ -36,11 +36,14 @@ const WTAudio = (() => {
     return buf;
   }
 
+  // Native, asynchronous base64 (FileReader) so long notes don't block the page.
   function toBase64(buffer) {
-    const bytes = new Uint8Array(buffer);
-    let bin = '';
-    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-    return btoa(bin);
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result).slice(String(r.result).indexOf(',') + 1));
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(new Blob([buffer]));
+    });
   }
 
   return { toWav16k, toBase64 };

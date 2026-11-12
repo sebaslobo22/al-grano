@@ -38,7 +38,12 @@ h1 { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -0.02em; line
 .pill[data-s="off"] i { background: var(--err); box-shadow: 0 0 0 3px rgba(229,72,77,.2); }
 .pill[data-s="busy"] i { animation: pulse 1s ease-in-out infinite alternate; }
 @keyframes pulse { to { opacity: .25; } }
-.help { margin: -8px 0 0; padding: 8px 12px; border-radius: 10px; background: rgba(229,72,77,.1); color: var(--text); font-size: 12.5px; }
+.help { margin: -4px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--tint); border: 1px solid rgba(255,138,31,.3); display: grid; gap: 6px; justify-items: start; }
+.help[hidden] { display: none; }
+.help .help-t { margin: 0; font-size: 13.5px; font-weight: 650; color: var(--text); }
+.help p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.btn-guia { margin-top: 4px; height: 34px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--accent); color: #1a0e00; font-size: 13px; font-weight: 650; cursor: pointer; transition: background-color .18s ease; }
+.btn-guia:hover { background: var(--accent-hover); }
 
 h2 { margin: 0 0 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
 .seg { display: flex; padding: 3px; gap: 2px; border-radius: 12px; background: var(--track); }

@@ -75,6 +75,68 @@ const WTFormat = (() => {
     if (last < text.length) parent.append(text.slice(last));
   }
 
+  // ---- structure: lists, summaries and requests, spotted with plain rules ----
+  // A sentence that opens a list item: "primero…", "en segundo lugar…", "número tres…", "por otro lado…".
+  const LEAD = '(?:(?:y|bueno|entonces|ok|vale|pues|ah)[,]?\\s+)?';
+  const ITEM = new RegExp(
+    '^' + LEAD +
+      '(?:(?:lo |en )?(?:primero|primer lugar|segundo(?: lugar)?|tercero|tercer lugar|cuarto(?: lugar)?|quinto(?: lugar)?)' +
+      '|n[uú]mero (?:uno|dos|tres|cuatro|cinco|\\d)|(?:uno|dos|tres|cuatro|cinco)[,:.]' +
+      '|por un lado|por otro lado|(?:y )?por [uú]ltimo|finalmente)\\b[,:.]?\\s*',
+    'i'
+  );
+  const BULLETY = /^(?:(?:y|bueno|entonces|ok|vale|pues|ah)[,]?\s+)?(?:por un lado|por otro lado)/i;
+  const SUMMARY = new RegExp(
+    '^' + LEAD + '(?:en resumen|resumiendo|en conclusi[oó]n|en pocas palabras|en definitiva|total que|b[aá]sicamente)\\b[,:.]?\\s*',
+    'i'
+  );
+  const ASK = /\b(?:p[aá]same|env[ií]ame|m[aá]ndame|necesito que|me (?:puedes|podr[ií]as|dices|confirmas|avisas)|acu[eé]rdate|no te olvides|no olvides|av[ií]same|conf[ií]rmame|dime si)\b/i;
+  const ASK_Q = /\b(?:puedes|podr[ií]as|te parece|me dices|qu[eé] opinas)\b/i;
+  const isAsk = (s) => ASK.test(s) || (/\?$/.test(s) && ASK_Q.test(s));
+
+  const sentencesOf = (p) => p.split(/(?<=[.?!])\s+/).map((s) => s.trim()).filter(Boolean);
+  const cap = (s) => s.replace(/^[a-záéíóúñ¿¡]/, (c) => c.toUpperCase());
+  const short = (s, max = 110) => (s.length <= max ? s : s.slice(0, s.lastIndexOf(' ', max)) + '…');
+
+  // Turns paragraphs into blocks: {p}, {list, ordered, items}, {summary}; plus the requests found.
+  function structure(paras) {
+    const all = paras.map(sentencesOf);
+    const itemCount = all.flat().filter((s) => ITEM.test(s)).length;
+    const blocks = [];
+    const asks = [];
+    let list = null;
+    for (const sentences of all) {
+      let para = [];
+      const flushPara = () => { if (para.length) blocks.push({ type: 'p', text: para.join(' ') }); para = []; };
+      for (const s of sentences) {
+        if (isAsk(s) && asks.length < 3 && !asks.includes(s)) asks.push(s);
+        if (SUMMARY.test(s)) {
+          flushPara();
+          list = null;
+          blocks.push({ type: 'summary', text: cap(s.replace(SUMMARY, '')) });
+        } else if (itemCount >= 2 && ITEM.test(s)) {
+          flushPara();
+          if (!list) {
+            list = { type: 'list', ordered: !BULLETY.test(s), items: [] };
+            blocks.push(list);
+          }
+          const rest = s.replace(ITEM, '');
+          list.items.push(cap(BULLETY.test(s) ? s : rest || s));
+        } else if (list && list.items.length && words(list.items[list.items.length - 1]) < 45) {
+          // Follow-up sentences stay with the item they explain.
+          list.items[list.items.length - 1] += ' ' + s;
+        } else {
+          list = null;
+          para.push(s);
+        }
+      }
+      flushPara();
+      // A new pause after a short item closes the list only if the next paragraph doesn't continue it.
+      if (list && list.items.length && words(list.items[list.items.length - 1]) >= 45) list = null;
+    }
+    return { blocks, asks };
+  }
+
   function clock(seconds) {
     if (!seconds || !isFinite(seconds)) return '';
     const s = Math.round(seconds);
@@ -109,7 +171,14 @@ const WTFormat = (() => {
   }
 
   function plainText(result) {
-    return paragraphs(result).join('\n\n');
+    const { blocks } = structure(paragraphs(result));
+    return blocks
+      .map((b) =>
+        b.type === 'list'
+          ? b.items.map((it, i) => (b.ordered ? i + 1 + '. ' : '• ') + it).join('\n')
+          : b.type === 'summary' ? 'En resumen: ' + b.text : b.text
+      )
+      .join('\n\n');
   }
 
   // Builds the finished transcript block.
@@ -165,10 +234,48 @@ const WTFormat = (() => {
       p.textContent = 'No se detectó voz en esta nota.';
       body.append(p);
     }
-    for (const text of paras) {
-      const p = document.createElement('p');
-      appendHighlighted(p, text);
-      body.append(p);
+    const { blocks, asks } = structure(paras);
+    if (asks.length) {
+      // What the sender asks for stays visible even when the note is folded.
+      const box = document.createElement('div');
+      box.className = 'ag-asks';
+      const tag = document.createElement('span');
+      tag.className = 'ag-tag';
+      tag.textContent = 'Te pide';
+      const ul = document.createElement('ul');
+      for (const a of asks) {
+        const li = document.createElement('li');
+        appendHighlighted(li, short(a));
+        ul.append(li);
+      }
+      box.append(tag, ul);
+      wrap.append(box);
+    }
+    for (const b of blocks) {
+      if (b.type === 'list') {
+        const el = document.createElement(b.ordered ? 'ol' : 'ul');
+        el.className = 'ag-list';
+        for (const it of b.items) {
+          const li = document.createElement('li');
+          appendHighlighted(li, it);
+          el.append(li);
+        }
+        body.append(el);
+      } else if (b.type === 'summary') {
+        const el = document.createElement('div');
+        el.className = 'ag-sum';
+        const tag = document.createElement('span');
+        tag.className = 'ag-tag';
+        tag.textContent = 'En resumen';
+        const p = document.createElement('p');
+        appendHighlighted(p, b.text);
+        el.append(tag, p);
+        body.append(el);
+      } else {
+        const p = document.createElement('p');
+        appendHighlighted(p, b.text);
+        body.append(p);
+      }
     }
     wrap.append(body);
 
@@ -193,5 +300,5 @@ const WTFormat = (() => {
     return wrap;
   }
 
-  return { build, paragraphs, icon, plainText };
+  return { build, paragraphs, structure, icon, plainText };
 })();
