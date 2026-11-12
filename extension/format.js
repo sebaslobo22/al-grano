@@ -40,7 +40,24 @@ const WTFormat = (() => {
       }
     }
     flush();
-    return out;
+    return out.flatMap(splitRunOn);
+  }
+
+  // Speech without pauses or periods comes back as one long block. Past ~40 words, cut it where
+  // spoken Spanish turns ("pero", "entonces", "o sea"…) so the eye gets places to rest.
+  const TURN = /\s+(?=(?:pero|entonces|o sea|porque|además|ademas|y bueno|bueno|ahora|igual|osea|y otra cosa|por eso|así que|asi que)\b)/gi;
+  function splitRunOn(p) {
+    if (words(p) <= 40 || /[.?!]\s/.test(p)) return [p];
+    const pieces = [];
+    let cur = '';
+    for (const part of p.split(TURN)) {
+      if (cur && words(cur) >= 22) { pieces.push(tidy(cur)); cur = part; } else cur = cur ? cur + ' ' + part : part;
+    }
+    if (cur) {
+      if (pieces.length && words(cur) < 8) pieces[pieces.length - 1] += ' ' + cur;
+      else pieces.push(tidy(cur));
+    }
+    return pieces.map((s, i) => (i < pieces.length - 1 && !/[.?!,;:]$/.test(s) ? s + '.' : s));
   }
 
   const DAYS = 'lunes|martes|miércoles|miercoles|jueves|viernes|sábado|sabado|domingo';

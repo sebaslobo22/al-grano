@@ -25,7 +25,7 @@ En tu computadora, sin nube y gratis.</p>
 ## Qué necesitas
 
 1. **Chrome** (o un navegador basado en Chromium que permita cargar extensiones descomprimidas).
-2. **[OpenWhispr](https://openwhispr.com)**, gratis y de código abierto, con un **modelo local** descargado en sus ajustes. Déjalo abierto: es el que convierte la voz en texto.
+2. **[OpenWhispr](https://openwhispr.com)**, gratis y de código abierto, con **cualquier modelo local** descargado y elegido en sus ajustes (Whisper, Parakeet, Orukeet…). Déjalo abierto: es el que convierte la voz en texto, siempre en tu computadora.
 
 ## Instalar (un minuto)
 
@@ -35,6 +35,12 @@ En tu computadora, sin nube y gratis.</p>
 4. Recarga WhatsApp Web y abre un chat con notas de voz.
 
 > No borres ni muevas la carpeta después de instalarla: Chrome lee la extensión desde ahí.
+
+## ¿Y en Safari?
+
+Funciona en Safari para Mac con el mismo código, pero Apple exige empaquetarla como app. Hoy eso se
+hace compilando el proyecto de [`safari/`](safari/) con Xcode (gratis, con un Apple ID). Una versión
+descargable para Safari necesita la firma de pago de Apple y todavía no está disponible.
 
 ## Si algo no sale
 
