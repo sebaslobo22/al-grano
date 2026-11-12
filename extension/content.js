@@ -172,12 +172,16 @@
     const resultText = n.result ? (typeof n.result === 'string' ? n.result : n.result.text) : '';
     const state = n.status + '|' + (resultText || n.error || '');
     let box = row.querySelector('.ag-box');
+    // A box hung on the row itself (bubble not found at the time) is moved into the bubble.
+    if (box && box.parentElement === row) { box.remove(); box = null; }
     if (box && box.dataset.state === state) return;
     if (!box) {
       // Only measure the bubble (forces layout) when the box has to be created.
+      const host = bubbleOf(row);
+      if (!host) return; // not laid out yet: the next scan tries again
       box = document.createElement('div');
       box.className = 'ag-box';
-      bubbleOf(row).appendChild(box);
+      host.appendChild(box);
     }
     box.dataset.state = state;
     box.textContent = '';
@@ -231,19 +235,25 @@
 
   // The bubble is the outermost ancestor of the play button that paints a background and is
   // narrower than the chat. WhatsApp's class names are obfuscated, so go by looks.
+  // Never returns the row itself: the text must stay inside the bubble, or wait.
   function bubbleOf(row) {
     const legacy = row.querySelector('.message-in, .message-out');
     if (legacy) return legacy;
     const rowWidth = row.getBoundingClientRect().width;
     let el = row.querySelector(VOICE_SELECTOR);
-    let bubble = null;
+    if (!rowWidth || !el) return null;
+    let painted = null;
+    let narrow = null;
     while (el && el !== row) {
-      const bg = getComputedStyle(el).backgroundColor;
-      const painted = bg && bg !== 'transparent' && !/rgba\([^)]*,\s*0\)$/.test(bg);
-      if (painted && el.getBoundingClientRect().width < rowWidth * 0.9) bubble = el;
+      const w = el.getBoundingClientRect().width;
+      if (w && w < rowWidth * 0.9) {
+        narrow = el;
+        const bg = getComputedStyle(el).backgroundColor;
+        if (bg && bg !== 'transparent' && !/rgba\([^)]*,\s*0\)$/.test(bg)) painted = el;
+      }
       el = el.parentElement;
     }
-    return bubble || row;
+    return painted || narrow;
   }
 
   let timer = null;
